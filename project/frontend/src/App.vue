@@ -24,22 +24,31 @@
 
 <script>
 
-import data from './assets/departmentData.js';
+import axios from 'axios';
 
 export default {
   name : 'App',
   data() {
     return {
-      name : data,
+      name : [],
     }
   },
   methods : {
-    increase() {
-      this.num += 1
+    async fetch() {
+      try{
+        const res = await axios.get('http://localhost:8888/');
+        this.name = res.data;
+      }catch(err) {
+        console.error('에러 발생 : ', err);
+      }
     }
   },
+  mounted() {
+    this.fetch();
+  }
 }
 </script>
+
 <style>
 @font-face {
     font-family: 'GmarketSansMedium';
@@ -70,7 +79,7 @@ input {
 
 .root_container {
   border-radius: 30px 30px 0 0;
-  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  box-shadow: rgba(0, 0, 0, 0.34) 2.8px 2.8px 7.7px;
   margin-top: 50px;
   /* border: 1px solid black; */
 }
