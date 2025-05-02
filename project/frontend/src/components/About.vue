@@ -3,7 +3,7 @@
     <div class="search_container">
       <div class="search_input">
         <input class="search"></input>
-        <div class="search_tag">내과</div>
+        <div class="search_tag"> {{ $store.getters.department }} </div>
       </div>
       
     </div>
@@ -18,10 +18,10 @@
       <div class="hospital_info" v-for="(hospitals, i) in hospitalList" :key="i">
         <div class="hospital_flex" @click="link">
           <div class="hospital_container">
-            <div class="hospital_name"> {{ hospitals.name }} </div>
-            <div class="hospital_department"> {{ hospitals.department }} </div>
-            <div class="hospital_address"> {{ hospitals.address }} </div>
-            <div class="hospital_content"> {{ hospitals.content }} </div>
+            <div class="hospital_name"> {{ hospitals.hospitalName }} </div>
+            <div class="hospital_department"> {{ hospitals.subject }} </div>
+            <div class="hospital_address"> {{ hospitals.hospitalAddress }} </div>
+            <div class="hospital_content"> {{ hospitals.hospitalAddress }} </div>
           </div>
           <img class="hospital_img" :src="hospitals.img">
         </div>
@@ -33,7 +33,7 @@
 
 <script>
 
-// import axios from 'axios';
+import axios from 'axios';
 import hospitalList from '@/assets/hospitalData.js';
 
 export default {
@@ -43,10 +43,12 @@ export default {
       map: null,
       tagList: ['응급실', '전문의', '24시간', '야간진료', '주차 가능', '응급실', '전문의', '24시간', '야간진료', '전문의', '전문의', '전문의', '24시간', '야간진료',],
       hospitalList: hospitalList,
+      hospitalId: this.$route.params.title,
+      radius: 1.0,
     }
   },
   mounted() {
-    // this.fetch();
+    this.fetch();
 
     if(window.kakao && window.kakao.maps) {
       this.loadMap();
@@ -54,15 +56,29 @@ export default {
       this.loadScript();
     }
   },
+  // watch : {
+  //   $route() {
+  //     this.fetch();
+
+  //     if(window.kakao && window.kakao.maps) {
+  //       this.loadMap();
+  //     }else {
+  //       this.loadScript();
+  //     }
+  //   }
+  // },
   methods : {
-    // async fetch() {
-    //   try{
-    //     const res = await axios.get('http://localhost:8888/');
-    //     this.name = res.data;
-    //   }catch(err) {
-    //     console.error('에러 발생 : ', err);
-    //   }
-    // },
+    async fetch() {
+      try{
+        const res = await axios.get(`http://localhost:8080/hospital_main/mapData?sub=${this.hospitalId}&userLat=${this.$store.getters.userLat}&userLng=${this.$store.getters.userLng}&radius=${this.radius}`);
+        this.hospitalList = res.data;
+        if (this.map) {
+          this.loadMaker();
+        }
+      }catch(err) {
+        console.error('에러 발생 : ', err);
+      }
+    },
 
     // api 불러오기
     loadScript() {
@@ -77,7 +93,7 @@ export default {
     loadMap() {
       const container = document.getElementById("map");
       const options = {
-        center: new window.kakao.maps.LatLng(37.3496446, 127.1095409),
+        center: new window.kakao.maps.LatLng(this.$store.getters.userLat, this.$store.getters.userLng),
         level: 4
       }
 
@@ -88,11 +104,11 @@ export default {
     // 마커 불러오기
     loadMaker() {
       this.hospitalList.forEach(hospital => {
-        const markerPosition = new window.kakao.maps.LatLng(hospital.lat, hospital.lng);
+        const markerPosition = new window.kakao.maps.LatLng(hospital.coordinateY, hospital.coordinateX);
 
         const marker = new window.kakao.maps.Marker({
           position: markerPosition,
-          title: hospital.name,
+          title: hospital.hospitalName,
         });
 
         marker.setMap(this.map);
@@ -101,7 +117,7 @@ export default {
 
     link() {
       window.location.href = 'http://www.kidshealth.co.kr/';
-    }
+    },
   },
 }
 </script>
@@ -115,9 +131,9 @@ export default {
   position: relative;
 }
 
-.search {
-  /* width: 100%; */
-}
+/* .search {
+  width: 100%;
+} */
 
 .search_tag {
   position: absolute;
@@ -137,12 +153,12 @@ export default {
 }
 
 #map {
-  height: 30vh;
+  height: 40vh;
 }
 
 .tag_container {
   padding: 15px 0;
-  margin: 0 60px;
+  margin: 0 10px;
   display: flex;
   gap: 15px;
   overflow-x: auto;
@@ -170,7 +186,7 @@ export default {
 }
 
 .keyword_container {
-  padding: 0 60px;
+  padding: 0 10px;
   padding-bottom: 15px;
   display: grid;
   grid-template-columns: repeat(1, 1fr);
@@ -206,10 +222,10 @@ export default {
   /* background-color: tomato; */
 }
 
-.hospital_content {
-  /* color: #298A08; */
-  /* background-color: yellow; */
-}
+/* .hospital_content {
+  color: #298A08;
+  background-color: yellow;
+} */
 
 .hospital_flex {
   display: flex;

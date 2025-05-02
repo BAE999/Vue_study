@@ -10,7 +10,7 @@
     </div>
 
     <div class="keyword_container">
-      <router-link to="about" v-for="(nameItem, i) in name" :key="i" class="keyword">
+      <router-link :to="`about/${nameItem.title}`" v-for="(nameItem, i) in name" :key="i" class="keyword" @click="currentDepartment(nameItem.title)">
         <div class="keyword_icon_container">
           <div class="keyword_icon">
             <i :class="nameItem.image"></i>
@@ -28,26 +28,46 @@
 <script>
 
 import axios from 'axios';
+import data from '@/assets/departmentData.js';
 
 export default {
   name : 'Home',
   data() {
     return {
-      name : [],
-    }
-  },
-  methods : {
-    async fetch() {
-      try{
-        const res = await axios.get('http://localhost:8888/');
-        this.name = res.data;
-      }catch(err) {
-        console.error('에러 발생 : ', err);
-      }
+      name : data,
+      userLat: null,
+      userLng: null,
+      error: null,
     }
   },
   mounted() {
-    this.fetch();
+    this.currentLocation();
+  },
+  methods : {
+    currentLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            this.userLat = position.coords.latitude;
+            this.userLng = position.coords.longitude;
+            // alert(`${this.userLat} + ${this.userLng}`);
+            this.$store.dispatch('updateLocation', { userLat: 37.44101664410122, userLng: 127.14762419695022 });
+            // alert(`${this.$store.getters.userLat} + ${this.$store.getters.userLng}`);
+            alert('함수 실행됨');
+          },
+          (err) => {
+            this.error = err.message;
+          }
+        );
+      } else {
+        this.error = "Geolocation is not supported by this browser.";
+      }
+    },
+
+    currentDepartment(department) {
+      this.$store.dispatch('updateDepartment', { department: department });
+    }
+
   }
 }
 </script>

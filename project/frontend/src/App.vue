@@ -1,8 +1,8 @@
 <!-- src/App.vue -->
 <template>
-  <router-view />
+    <router-view />
 </template>
-
+  
 <style>
 @font-face {
     font-family: 'GmarketSansMedium';
