@@ -30,19 +30,19 @@ export default [{
     },
     {
     id : 5,
-    title: "소화기내과",
+    title: "소아청소년과",
     image: "fa-solid fa-head-side-cough",
     content: "Gastroenterology"
     },
     {
     id : 6,
-    title: "호흡기내과",
+    title: "이비인후과",
     image: "fa-solid fa-circle-radiation",
     content: "Respiratory Medicine"
     },
     {
     id : 7,
-    title: "심장내과",
+    title: "가정의학과",
     image: "fa-solid fa-skull",
     content: "Cardiology"
 }];

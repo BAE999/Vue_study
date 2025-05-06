@@ -10,7 +10,8 @@
     </div>
 
     <div class="keyword_container">
-      <router-link :to="`about/${nameItem.title}`" v-for="(nameItem, i) in name" :key="i" class="keyword" @click="currentDepartment(nameItem.title)">
+      <router-link :to="`about/${nameItem.title}`" v-for="(nameItem, i) in name" :key="i" class="keyword"
+        @click="currentDepartment(nameItem.title)">
         <div class="keyword_icon_container">
           <div class="keyword_icon">
             <i :class="nameItem.image"></i>
@@ -24,46 +25,25 @@
     </div>
   </div>
 </template>
-  
-<script>
 
-import axios from 'axios';
+<script>
 import data from '@/assets/departmentData.js';
+import { setUserLocation } from '@/services/setUserLocation';
 
 export default {
-  name : 'Home',
+  name: 'Home',
   data() {
     return {
-      name : data,
-      userLat: null,
-      userLng: null,
-      error: null,
+      name: data,
     }
   },
   mounted() {
-    this.currentLocation();
+    if(this.$store.getters.userLat == null) {
+      setUserLocation(this);
+    }
   },
-  methods : {
-    currentLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            this.userLat = position.coords.latitude;
-            this.userLng = position.coords.longitude;
-            // alert(`${this.userLat} + ${this.userLng}`);
-            this.$store.dispatch('updateLocation', { userLat: 37.44101664410122, userLng: 127.14762419695022 });
-            // alert(`${this.$store.getters.userLat} + ${this.$store.getters.userLng}`);
-            alert('함수 실행됨');
-          },
-          (err) => {
-            this.error = err.message;
-          }
-        );
-      } else {
-        this.error = "Geolocation is not supported by this browser.";
-      }
-    },
-
+  methods: {
+    // 선택된 진료과 전역설정
     currentDepartment(department) {
       this.$store.dispatch('updateDepartment', { department: department });
     }
@@ -79,20 +59,20 @@ export default {
   height: calc(100vh - 2vh);
   width: calc(100vw - 40vw);
   margin-top: 1vh;
-  margin-bottom: 1vh;    
+  margin-bottom: 1vh;
   background: white;
   border-radius: 30px 30px 0 0;
   box-shadow: rgba(0, 0, 0, 0.34) 2.8px 2.8px 7.7px;
 }
 
 /* search section */
-.search_container{
+.search_container {
   display: flex;
   flex-direction: column;
   gap: 30px;
   border-radius: 30px 30px 0 0;
   padding: 60px;
-  background: linear-gradient(87deg, rgba(20,184,166,1) 0%, rgba(16,185,129,1) 100%);
+  background: linear-gradient(87deg, rgba(20, 184, 166, 1) 0%, rgba(16, 185, 129, 1) 100%);
 }
 
 .search_comment_first {
@@ -109,10 +89,10 @@ export default {
   display: flex;
   align-items: center;
   height: 50px;
-  padding:10px;
+  padding: 10px;
   padding-left: 30px;
   font-size: 30px;
-  box-shadow: 0 3px 3px rgba(0,0,0,0.2);
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
   border-radius: 30px;
   background-color: white;
 }
@@ -139,7 +119,7 @@ export default {
   border-radius: 10px;
   gap: 20px;
   border: 1px solid #F2F2F2;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; 
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 .keyword:hover {
@@ -173,5 +153,54 @@ export default {
 
 .keyword_title {
   flex: 1;
+}
+
+/* About 페이지 커스텀 레이아웃 */
+.customoverlay {
+  position: relative;
+  bottom: 50px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  border-bottom: 2px solid #ddd;
+  float: left;
+}
+
+.customoverlay:nth-of-type(n) {
+  border: 0;
+  box-shadow: 0px 1px 2px #888;
+}
+
+.customoverlay a {
+  display: block;
+  text-decoration: none;
+  color: #000;
+  text-align: center;
+  border-radius: 6px;
+  font-size: 14px;
+  /* font-weight: bold; */
+  overflow: hidden;
+  background: #11BF7F;
+  background: #11BF7F url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png) no-repeat right 14px center;
+}
+
+.customoverlay .title {
+  display: block;
+  text-align: center;
+  background: #fff;
+  margin-right: 35px;
+  padding: 10px 15px;
+  font-size: 14px;
+  /* font-weight: bold; */
+}
+
+.customoverlay:after {
+  content: '';
+  position: absolute;
+  margin-left: -12px;
+  left: 50%;
+  bottom: -12px;
+  width: 22px;
+  height: 12px;
+  background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png')
 }
 </style>
