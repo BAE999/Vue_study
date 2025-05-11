@@ -3,10 +3,7 @@
     <div class="search_container">
       <div class="search_comment_first">의료기관 검색</div>
       <div class="search_comment_second">현재 위치에서 가까운 병원을 찾아보세요</div>
-      <div class="search_input">
-        <input class="search" placeholder="진료과를 검색 하세요."></input>
-        <div class="search_tag"></div>
-      </div>
+      <vue3-tags-input :tags="tags" placeholder="진료과를 검색 하세요." @on-tags-changed="handleChangeTag"/>
     </div>
 
     <div class="keyword_container">
@@ -29,16 +26,21 @@
 <script>
 import data from '@/assets/departmentData.js';
 import { setUserLocation } from '@/services/setUserLocation';
+import Vue3TagsInput from 'vue3-tags-input';
 
 export default {
   name: 'Home',
+  components: {
+    Vue3TagsInput
+  },
   data() {
     return {
       name: data,
+      tags: [],
     }
   },
   mounted() {
-    if(this.$store.getters.userLat == null) {
+    if (this.$store.getters.userLat == null) {
       setUserLocation(this);
     }
   },
@@ -46,7 +48,11 @@ export default {
     // 선택된 진료과 전역설정
     currentDepartment(department) {
       this.$store.dispatch('updateDepartment', { department: department });
-    }
+    },
+
+    handleChangeTag(tags) {
+      this.tags = tags;
+    },
 
   }
 }
@@ -85,6 +91,37 @@ export default {
   color: white;
 }
 
+.v3ti {
+  align-items: center;
+  height: 50px;
+  padding: 10px;
+  padding-left: 30px;
+  font-size: 30px;
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
+  border: none !important;
+  border-radius: 30px !important;
+  flex-wrap: nowrap !important;
+}
+
+.v3ti-new-tag {
+  height: 50px !important;
+}
+
+.v3ti-tag {
+  gap: 10px !important;
+  margin: 0 !important;
+  padding: 1px 20px !important;
+  border-radius: 25px !important;
+  background: #11BF7F !important;
+  height: 50px !important;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px !important;
+}
+
+.v3ti-content {
+  gap: 10px;
+  align-items: center;
+}
+
 .search_input {
   display: flex;
   align-items: center;
@@ -93,9 +130,10 @@ export default {
   padding-left: 30px;
   font-size: 30px;
   box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
-  border-radius: 30px;
+  border-radius: 30px !important;
   background-color: white;
 }
+
 
 /* keyword section */
 .keyword_container {

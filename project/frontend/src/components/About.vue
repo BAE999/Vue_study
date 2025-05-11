@@ -1,17 +1,13 @@
 <template>
   <div class="root_container">
     <div class="search_container">
-      <div class="search_input">
-        <input class="search"></input>
-        <div class="search_tag"> {{ $store.getters.department }} </div>
-      </div>
-
+      <vue3-tags-input :tags="tags" placeholder="진료과를 검색 하세요." @on-tags-changed="handleChangeTag" />
     </div>
 
     <div id="map"></div>
 
     <div class="tag_container">
-      <div class="tag" v-for="(tagItem, i) in tagList" :key="i"> {{ tagItem }}</div>
+      <div class="tag" v-for="(tagItem, i) in tagList" :key="i" @click="handleAddTag(tagItem)"> {{ tagItem }}</div>
     </div>
 
     <div class="keyword_container">
@@ -37,9 +33,13 @@ import axios from 'axios';
 import hospitalList from '@/assets/hospitalData.js';
 import hospitalimg from '@/assets/hospital.png';
 import { setUserLocation } from '@/services/setUserLocation';
+import Vue3TagsInput from 'vue3-tags-input';
 
 export default {
   name: 'About',
+  components: {
+    Vue3TagsInput
+  },
   data() {
     return {
       map: null,
@@ -47,9 +47,10 @@ export default {
       hospitalList: hospitalList,
       hospitalimg: hospitalimg,
       radius: 1.0,
+      tags: [this.$store.getters.department],
     }
   },
-  
+
   mounted() {
     this.fetch();
 
@@ -60,6 +61,14 @@ export default {
     }
   },
   methods: {
+    handleChangeTag(tags) {
+      this.tags = tags;
+    },
+
+    handleAddTag(tags) {
+      this.tags.push(tags);
+    },
+
     async fetch() {
       try {
         const res = await axios.get('http://localhost:8889/hospital_main/mapData', {
